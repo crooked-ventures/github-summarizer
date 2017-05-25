@@ -2,7 +2,7 @@ import GithubComment from './types/github-comment'
 import GithubIssue from './types/github-issue'
 import { getAccessToken, getUsername } from './storage'
 
-const GITHUB_HEADERS_MATCH = /^(?:(<(.*?)>); rel="next", )(<(.*?)>); rel="last"/
+const GITHUB_HEADERS_MATCH = /^.*?<(.*?)>; rel="next".*?/
 
 interface CommentsStorage {
   [ownerAndRepo: string]: {
@@ -53,24 +53,24 @@ export const getIssuesForUrl = async (url: string): Promise<GithubIssue[]> => {
     }
   } : {}
   const thisFetch = fetch(url, options)
-  console.log('Looking up issues with fetch:', thisFetch)
-
   const res = await thisFetch
-
   let issuesSoFar = await (res.json() as Promise<GithubIssue[]>)
 
   const linkHeaders = GITHUB_HEADERS_MATCH.exec(res.headers.get('Link') || '')
   if (linkHeaders) {
     const nextLink = linkHeaders[1]
     if (nextLink) {
-      console.log('nextLink found:', linkHeaders, nextLink)
-      // const additionalIssues = getIssues({url: nextLink})
+      console.info('nextLink found:', nextLink)
+      const additionalIssues = await getIssuesForUrl(nextLink)
+      issuesSoFar = issuesSoFar.concat(additionalIssues)
     }
   }
 
   // Filter out pull requests
+  console.info('Filtering out pull reqests.')
   issuesSoFar = issuesSoFar.filter(issue => !issue.pull_request)
 
+  console.info('Returning issues:', issuesSoFar)
   return issuesSoFar
 }
 
