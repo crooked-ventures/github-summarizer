@@ -2,7 +2,6 @@
   "name": "github-summarizer",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://myusername.github.io/my-app",
   "dependencies": {
     "bootstrap": "^4.0.0-alpha.6",
     "localforage": "^1.5.0",
