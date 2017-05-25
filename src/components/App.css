@@ -1,0 +1,8 @@
+.media-body {
+  max-width: 100%;
+  padding-right: 5rem;
+}
+
+.media-body img {
+  max-width: 100%;
+}
